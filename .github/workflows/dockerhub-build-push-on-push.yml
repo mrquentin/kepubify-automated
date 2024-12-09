@@ -33,10 +33,3 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/kepubify-automated:dev
 
           platforms: linux/amd64,linux/arm64
-
-      - name: Increment dev build number
-        uses: action-pack/increment@v2
-        id: increment
-        with:
-          name: 'CURRENT_DEV_BUILD_NUM'
-          token: ${{ secrets.DEV_BUILD_NUM_INCREMENTOR_TOKEN }}
