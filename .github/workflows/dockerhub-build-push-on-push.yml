@@ -3,6 +3,9 @@ name: Build & Push - Dev
 
 on:
   push:
+    paths:
+      - 'script.sh'
+      - 'Dockerfile'
 
 jobs:
   build:
