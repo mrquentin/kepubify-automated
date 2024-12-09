@@ -1,0 +1,44 @@
+name: Build & Push - Dev
+# Automatically builds and pushes a dev image
+
+on:
+  push:
+    - '**/Dockerfile'
+    - '**.script.sh'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: DockerHub login
+        uses: docker/loginc-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PA_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          build-args: |
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+            VERSION=${{ secrets.GITHUB_SHA }}-DEV_BUILD
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/kepubify-automated:dev
+
+          platforms: linux/amd64,linux/arm64
+
+      - name: Increment dev build number
+        uses: action-pack/increment@v2
+        id: increment
+        with:
+          name: 'CURRENT_DEV_BUILD_NUM'
+          token: ${{ secrets.DEV_BUILD_NUM_INCREMENTOR_TOKEN }}
